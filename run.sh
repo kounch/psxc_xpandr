@@ -56,11 +56,11 @@ bndcp_psxdata() {
     SRC_FILE=$1
     DST_FILE=$2
     if [ -e "${DST_FILE}" ]; then
-		if [ ! -e "${SRC_FILE}" ]; then
-			cp -r "${DST_FILE}" "${SRC_FILE}"
-		fi
-		mount -o bind "${SRC_FILE}" "${DST_FILE}"
-	fi
+        if [ ! -e "${SRC_FILE}" ]; then
+            cp -r "${DST_FILE}" "${SRC_FILE}"
+        fi
+        mount -o bind "${SRC_FILE}" "${DST_FILE}"
+    fi
 }
 
 
@@ -88,10 +88,10 @@ cd /media/games
 for D in *; do
     echo 0 > /sys/class/leds/red/brightness
     if [ -d "${D}" ]; then
-    	#Create dir in /gaadata, if needed
-    	if [ ! -d "/gaadata/${D}" ]; then
-    		mkdir -p "/gaadata/${D}"
-    	fi
+        #Create dir in /gaadata, if needed
+        if [ ! -d "/gaadata/${D}" ]; then
+            mkdir -p "/gaadata/${D}"
+        fi
         #Bind usb drive dir into /gaadata
         bndcp_psxdata "/media/games/${D}" "/gaadata/${D}"
         #Bind usb drive data dirs into AppData
@@ -118,7 +118,7 @@ bndcp_psxdata /media/data/GR /usr/sony/share/data/images/GR
 
 #Copy Cheats DB, if found
 if [ -e /media/games/cheatpops.db ]; then
-	touch /data/AppData/sony/pcsx/cheatpops.db
+    touch /data/AppData/sony/pcsx/cheatpops.db
     bndcp_psxdata /media/games/cheatpops.db /data/AppData/sony/pcsx/cheatpops.db
 fi
 
