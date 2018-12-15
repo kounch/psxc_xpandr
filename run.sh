@@ -34,7 +34,7 @@ set_psxdirs() {
     SRC_DIR=$1
     DST_DIR=$2
     PCSX_DIRS="cfg cheats memcards patches plugins screenshots sstates"
-    for i in $PCSX_DIRS; do
+    for i in ${PCSX_DIRS}; do
         mkdir -p "${SRC_DIR}/${i}"
         mkdir -p "${DST_DIR}/${i}"
         bndcp_psxdata "${SRC_DIR}/${i}" "${DST_DIR}/${i}"
@@ -46,7 +46,7 @@ set_psxfiles() {
     SRC_DIR=$1
     DST_DIR=$2
     PCSX_FILES="filename.txt.res filename.txt.bak"
-    for i in $PCSX_FILES; do
+    for i in ${PCSX_FILES}; do
         bndcp_psxdata "${SRC_DIR}/${i}" "${DST_DIR}/${i}"
     done
 }
@@ -118,7 +118,8 @@ bndcp_psxdata /media/data/GR /usr/sony/share/data/images/GR
 
 #Copy Cheats DB, if found
 if [ -e /media/games/cheatpops.db ]; then
-    cp /media/games/cheatpops.db /data/AppData/sony/pcsx/cheatpops.db
+	touch /data/AppData/sony/pcsx/cheatpops.db
+    bndcp_psxdata /media/games/cheatpops.db /data/AppData/sony/pcsx/cheatpops.db
 fi
 
 #Set udev rule for controllers
