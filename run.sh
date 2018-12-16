@@ -29,29 +29,7 @@
 
 #Functions
 
-#Create, if needed, and bind all game data dirs
-set_psxdirs() {
-    SRC_DIR=$1
-    DST_DIR=$2
-    PCSX_DIRS="cfg cheats memcards patches plugins screenshots sstates"
-    for i in ${PCSX_DIRS}; do
-        mkdir -p "${SRC_DIR}/${i}"
-        mkdir -p "${DST_DIR}/${i}"
-        bndcp_psxdata "${SRC_DIR}/${i}" "${DST_DIR}/${i}"
-    done
-}
-
-#Extract and bind, data files of snapshot
-set_psxfiles() {
-    SRC_DIR=$1
-    DST_DIR=$2
-    PCSX_FILES="filename.txt.res filename.txt.bak"
-    for i in ${PCSX_FILES}; do
-        bndcp_psxdata "${SRC_DIR}/${i}" "${DST_DIR}/${i}"
-    done
-}
-
-#Bind file. If not found on source, extract it
+#Bind file. If not found on source, copy it
 bndcp_psxdata() {
     SRC_FILE=$1
     DST_FILE=$2
@@ -94,12 +72,13 @@ for D in *; do
         fi
         #Bind usb drive dir into /gaadata
         bndcp_psxdata "/media/games/${D}" "/gaadata/${D}"
-        #Bind usb drive data dirs into AppData
-        set_psxdirs "/media/data/games/${D}" "/data/AppData/sony/pcsx/${D}/.pcsx"
-        #Bind usb drive data files into AppData
-        set_psxfiles "/media/data/games/${D}" "/data/AppData/sony/pcsx/${D}/.pcsx"
-        #Link game config 
-        ln -s "/gaadata/${D}/pcsx.cfg" "/data/AppData/sony/pcsx/${D}/.pcsx/pcsx.cfg"
+        #Create dir in /data/AppData/sony/pcsx/, if needed
+        if [ ! -d "/data/AppData/sony/pcsx/${D}/.pcsx" ]; then
+            mkdir -p "/data/AppData/sony/pcsx/${D}/.pcsx"
+        fi
+        #Bind usb drive dir into /data/AppData/sony/pcsx/
+        bndcp_psxdata "/media/data/games/${D}" "/data/AppData/sony/pcsx/${D}/.pcsx"
+        cp "/media/games/${D}/pcsx.cfg" "/media/data/games/${D}/pcsx.cfg"
     fi
     echo 1 > /sys/class/leds/red/brightness
 done
