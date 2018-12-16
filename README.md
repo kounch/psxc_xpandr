@@ -5,6 +5,7 @@ Features:
 * Can keep or virtually replace the original installed games
 * Minimal modification of PlayStation Classic Storage
 * Extracts automatically most of the needed files when used on a blank USB drive
+* Adds support for access to the console menu using simultaneously the buttons `Select` and `Triangle` of a controller
 * Optionally compatible to play with two controllers, using a USB hub
 * Optional UI modifications support
 * Optional cheats support via cheatpops.db
@@ -91,13 +92,22 @@ Edit the file `data/system/20-joystick.rules`, replacing its content with
     KERNEL=="js0",SUBSYSTEMS=="input",SYMLINK+="input/joystick0"
     KERNEL=="js1",SUBSYSTEMS=="input",SYMLINK+="input/joystick1"
 
-#### Add support for more than 25 games
+#### Adding support for more than 25 games
 
 Edit the file `data/system/sonyapp-copylink`, changing the number 25 in the second line (`COUNT_MAX=25`) for a greater number.
 
-### Add cheats
+### Adding cheats
 
 Copy or create a `cheatpops.db` file inside the directory `/games` of your USB drive.
+
+### Credits
+
+Based on:
+* lolhack, a payload launcher created by [madmonkey](https://github.com/madmonkey1907)
+* Access Esc Menu from Select + Triangle on controller by andshrew
+* PCSX ReARMed, PCSX port for ARM by [Notaz](https://notaz.gp2x.de) (info about cheatpops.db)
+* Reddit's rubixcube6 explanation on [how to make custom themes](https://redd.it/a5g5kx)
+* Reddit's NonyaDB explanation to [overcome 25 games limit](https://www.reddit.com/r/PlaystationClassic/comments/a44ka6/add_custom_games_on_usb_storage_with_gpghax/ebci4hg/)
 
 ### FAQ
 
@@ -107,18 +117,16 @@ The script tries to keep to a minimum the number of files and directories modifi
 
 Files/directories that the script creates in the internal media:
 * For any directory that you create in `/games`, if it doesn't exist, an empty directory with the same name is created in the internal media in `/gaadata`
-* For any directory that you create in `/games`, if it doesn't exist, a directory with the same name is created in `/data/AppData/sony/pcsx/`, and the following empty directories are created inside:
-
-      .pcsx/cfg
-      .pcsx/cheats
-      .pcsx/memcards
-      .pcsx/patches
-      .pcsx/plugins
-      .pcsx/screenshots
-      .pcsx/sstates
-
+* For any directory that you create in `/games`, if it doesn't exist, a directory with the same name is created in `/data/AppData/sony/pcsx/`.
 * For any directory that you create in `/games`, inside the directory with the same name in `/data/AppData/sony/pcsx/`, a symbolic link `.pcsx/pcsx.cfg` is created for the `pcsx.cfg` in your USB drive.
+* If you provide a 'cheatpops.db' file, an empty one with the same name is created inside the directory `/data/AppData/sony/pcsx`.
 
 ### Can it brick my console?
 
-A lot of work has been made to try to make it as failsafe as possible, however, no warranties are made for any damage that you could make to your console by using it. Please, don't do if you if you are not sure of what you are doing.
+A lot of work has been made to try to make it as failsafe as possible, however, no warranties are made or responsabilities taken for any damage that you could make to your console by using it. Please, don't do if you if you are not sure of what you are doing, and try another option like, for example, [BleemSync](https://github.com/pathartl/BleemSync).
+
+### How does it work?
+
+The file `LUPDATA.bin` inside the folder `691843bb-62d6-4423-a105-19c06af91a8` is a shell script (source available [here](https://github.com/kounch/psxc_xpandr)), encrypted and signed so that the internal update system of an original PlayStation Classic copies it to a temporary folder an executes its contents.
+Then, the script stops the main console menu, mounts virtual and temporal files and folders from the USB stick, reconfigures temporarily the system, and launchs again the main menu software.
+This way, if the PlayStation Classic is powered off, and then started again without the USB drive, everything should work as if no modifications were made.
