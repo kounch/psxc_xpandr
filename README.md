@@ -101,7 +101,7 @@ Edit the file `data/system/sonyapp-copylink`, changing the number 25 in the seco
 
 Copy or create a `cheatpops.db` file inside the directory `/games` of your USB drive.
 
-### Credits
+## Credits
 
 Based on:
 * lolhack, a payload launcher created by [madmonkey](https://github.com/madmonkey1907)
@@ -111,9 +111,9 @@ Based on:
 * Reddit's rubixcube6 explanation on [how to make custom themes](https://redd.it/a5g5kx)
 * Reddit's NonyaDB explanation to [overcome 25 games limit](https://www.reddit.com/r/PlaystationClassic/comments/a44ka6/add_custom_games_on_usb_storage_with_gpghax/ebci4hg/)
 
-### FAQ
+## FAQ
 
-#### Does this modify my console?
+### Does this modify my console?
 
 The script tries to keep to a minimum the number of files and directories modified in the internal storage of the console, mounting virtually most of the data from your USB drive. However, a minimal amount of data has to be created in order for it to work.
 
@@ -132,3 +132,29 @@ A lot of work has been made to try to make it as failsafe as possible, however, 
 The file `LUPDATA.bin` inside the folder `691843bb-62d6-4423-a105-19c06af91a8` is a shell script (source available [here](https://github.com/kounch/psxc_xpandr)), encrypted and signed so that the internal update system of an original PlayStation Classic copies it to a temporary folder an executes its contents.
 Then, the script stops the main console menu, mounts virtual and temporal files and folders from the USB stick, reconfigures temporarily the system, and launchs again the main menu software.
 This way, if the PlayStation Classic is powered off, and then started again without the USB drive, everything should work as if no modifications were made.
+
+## Copyright
+
+Copyright (c) 2018, kounch
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
