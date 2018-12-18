@@ -59,6 +59,7 @@ killall ui_menu
 
 #Create, if needed, basic directory structure on USB drive
 mkdir -p /media/games
+mkdir -p /media/data/games
 mkdir -p /media/data/system
 
 #Bind USB drive game and data dirs, if they exist
