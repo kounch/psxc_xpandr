@@ -27,6 +27,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+#Global Vars
+ORIG_DIR=/media/games
+ORIG_DB=${ORIG_DIR}/custom.db
+
+
 #Functions
 
 #Bind file. If not found on source, copy it
@@ -39,6 +44,53 @@ bndcp_psxdata() {
         fi
         mount -o bind "${SRC_FILE}" "${DST_FILE}"
     fi
+}
+
+#Alter or expand database with data from INI file
+manage_db() {
+    INI_FILE=$1
+    DB_FILE=$2
+    SQLITE_BIN=/media/691843bb-62d6-4423-a105-19c06af91a8c/sqlite3
+    TMP_DB=/tmp/tmp_xpandr.db
+
+	if [ -f "${INI_FILE}" ]; then
+        cp -f "${DB_FILE}" "${TMP_DB}"
+
+		dos2unix "${INI_FILE}" >/dev/null 2>&1
+		G_TITLE=`grep 'Title=' "${INI_FILE}" | awk -F'=' '{print $2}' | sed 's/'"'"'/'"''"'/g'`
+		G_PUBLISHER=`grep 'Publisher=' "${INI_FILE}" | awk -F'=' '{print $2}' | sed 's/'"'"'/'"''"'/g'`
+		G_YEAR=`grep 'Year=' "${INI_FILE}" | awk -F'=' '{print $2}'`
+		G_PLAYERS=`grep 'Players=' "${INI_FILE}" | awk -F'=' '{print $2}'`
+		G_DISCS=`grep 'Discs=' "${INI_FILE}" | awk -F'=' '{print $2}' | sed 's/,/ /g'`
+
+		G_ROW=`${SQLITE_BIN} "${TMP_DB}" "SELECT * FROM GAME WHERE GAME_ID=${D};"`
+		if [ -z "${G_ROW}" ]; then
+			Q_TXT="INSERT INTO GAME (GAME_ID,GAME_TITLE_STRING,PUBLISHER_NAME"
+			Q_TXT="${Q_TXT},RELEASE_YEAR,PLAYERS,RATING_IMAGE,GAME_MANUAL_QR_IMAGE"
+			Q_TXT="${Q_TXT}) VALUES (${D},'${G_TITLE}','${G_PUBLISHER}',${G_YEAR}"
+			Q_TXT="${Q_TXT},${G_PLAYERS},'CERO_A','QR_Code_GM');"
+		else
+			Q_TXT="UPDATE GAME SET GAME_ID=${D},GAME_TITLE_STRING='${G_TITLE}'"
+			Q_TXT="${Q_TXT},PUBLISHER_NAME='${G_PUBLISHER}',RELEASE_YEAR=${G_YEAR}"
+			Q_TXT="${Q_TXT},PLAYERS=${G_PLAYERS}"
+			Q_TXT="${Q_TXT},RATING_IMAGE='CERO_A',GAME_MANUAL_QR_IMAGE='QR_Code_GM'"
+			Q_TXT="${Q_TXT} WHERE GAME_ID=${D};"
+		fi
+		SQL_QUERY=`${SQLITE_BIN} "${TMP_DB}" "${Q_TXT}"`
+		
+		Q_TXT="DELETE FROM DISC WHERE GAME_ID=${D};"
+		SQL_QUERY=`${SQLITE_BIN} "${TMP_DB}" "${Q_TXT}"`
+		
+		declare -i DISC_ID=1
+		for R in $G_DISCS; do
+			Q_TXT="INSERT INTO DISC (GAME_ID,DISC_NUMBER,BASENAME)"
+			Q_TXT="${Q_TXT} VALUES (${D},${DISC_ID},'${R}');"
+			SQL_QUERY=`${SQLITE_BIN} "${TMP_DB}" "${Q_TXT}"`
+			DISC_ID=$DISC_ID+1
+		done
+
+        mv -f "${TMP_DB}" "${DB_FILE}"
+	fi
 }
 
 
@@ -58,12 +110,15 @@ export PCSX_ESC_KEY=2
 killall ui_menu
 
 #Create, if needed, basic directory structure on USB drive
-mkdir -p /media/games
+mkdir -p "${ORIG_DIR}"
 mkdir -p /media/data/games
 mkdir -p /media/data/system
 
+#Extract/Bind Custom DB
+bndcp_psxdata "${ORIG_DB}" /gaadata/databases/regional.db
+
 #Bind USB drive game and data dirs, if they exist
-cd /media/games
+cd "${ORIG_DIR}"
 for D in *; do
     echo 0 > /sys/class/leds/red/brightness
     if [ -d "${D}" ]; then
@@ -72,14 +127,16 @@ for D in *; do
             mkdir -p "/gaadata/${D}"
         fi
         #Bind usb drive dir into /gaadata
-        bndcp_psxdata "/media/games/${D}" "/gaadata/${D}"
+        bndcp_psxdata "${ORIG_DIR}/${D}" "/gaadata/${D}"
         #Create dir in /data/AppData/sony/pcsx/, if needed
         if [ ! -d "/data/AppData/sony/pcsx/${D}/.pcsx" ]; then
             mkdir -p "/data/AppData/sony/pcsx/${D}/.pcsx"
         fi
         #Bind usb drive dir into /data/AppData/sony/pcsx/
         bndcp_psxdata "/media/data/games/${D}" "/data/AppData/sony/pcsx/${D}/.pcsx"
-        cp "/media/games/${D}/pcsx.cfg" "/media/data/games/${D}/pcsx.cfg"
+        cp "${ORIG_DIR}/${D}/pcsx.cfg" "/media/data/games/${D}/pcsx.cfg"
+        #Edit database, if INI file is found
+        manage_db "${ORIG_DIR}/${D}/Game.ini" "${ORIG_DB}"
     fi
     echo 1 > /sys/class/leds/red/brightness
 done
@@ -90,16 +147,13 @@ echo 0 > /sys/class/leds/red/brightness
 bndcp_psxdata /media/data/system/custom.pre /data/AppData/sony/ui/user.pre
 bndcp_psxdata /media/data/system/sonyapp-copylink /usr/sony/bin/sonyapp-copylink
 
-#Extract/Bind Custom DB
-bndcp_psxdata /media/games/custom.db /gaadata/databases/regional.db
-
 #Extract/Bind Custom UI
 bndcp_psxdata /media/data/GR /usr/sony/share/data/images/GR
 
 #Copy Cheats DB, if found
-if [ -e /media/games/cheatpops.db ]; then
+if [ -e "${ORIG_DIR}/cheatpops.db" ]; then
     touch /data/AppData/sony/pcsx/cheatpops.db
-    bndcp_psxdata /media/games/cheatpops.db /data/AppData/sony/pcsx/cheatpops.db
+    bndcp_psxdata "${ORIG_DIR}/cheatpops.db" /data/AppData/sony/pcsx/cheatpops.db
 fi
 
 #Set udev rule for controllers
