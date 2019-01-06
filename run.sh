@@ -27,10 +27,80 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-#Global Vars
-ORIG_DIR=/media/games
-ORIG_DB=${ORIG_DIR}/custom.db
+#Main script
+main() {
+    ORIG_DIR=/media/games
+    ORIG_DB=${ORIG_DIR}/custom.db
 
+    #Needed for Esc Menu
+    export PCSX_ESC_KEY=2
+
+    #Kill main menu, just in case anything was locked or in use
+    killall ui_menu
+
+    #Create, if needed, basic directory structure on USB drive
+    mkdir -p "${ORIG_DIR}"
+    mkdir -p /media/data/games
+    mkdir -p /media/data/system
+
+    #Extract/Bind Custom DB
+    bndcp_psxdata "${ORIG_DB}" /gaadata/databases/regional.db
+
+    #Bind USB drive game and data dirs, if they exist
+    cd "${ORIG_DIR}"
+    for D in *; do
+        echo 0 > /sys/class/leds/red/brightness
+        if [ -d "${D}" ]; then
+            #Create dir in /gaadata, if needed
+            if [ ! -d "/gaadata/${D}" ]; then
+                mkdir -p "/gaadata/${D}"
+            fi
+            #Bind usb drive dir into /gaadata
+            bndcp_psxdata "${ORIG_DIR}/${D}" "/gaadata/${D}"
+            #Create dir in /data/AppData/sony/pcsx/, if needed
+            if [ ! -d "/data/AppData/sony/pcsx/${D}/.pcsx" ]; then
+                mkdir -p "/data/AppData/sony/pcsx/${D}/.pcsx"
+            fi
+            #Bind usb drive dir into /data/AppData/sony/pcsx/
+            bndcp_psxdata "/media/data/games/${D}" "/data/AppData/sony/pcsx/${D}/.pcsx"
+            cp "${ORIG_DIR}/${D}/pcsx.cfg" "/media/data/games/${D}/pcsx.cfg"
+            #Edit database, if INI file is found
+            manage_db "${ORIG_DIR}/${D}/Game.ini" "${ORIG_DB}"
+        fi
+        echo 1 > /sys/class/leds/red/brightness
+    done
+
+    echo 0 > /sys/class/leds/red/brightness
+
+    #Extract/Bind Preferences
+    bndcp_psxdata /media/data/system/custom.pre /data/AppData/sony/ui/user.pre
+    bndcp_psxdata /media/data/system/sonyapp-copylink /usr/sony/bin/sonyapp-copylink
+
+    #Extract/Bind Custom UI
+    bndcp_psxdata /media/data/GR /usr/sony/share/data/images/GR
+
+    #Copy Cheats DB, if found
+    if [ -e "${ORIG_DIR}/cheatpops.db" ]; then
+        touch /data/AppData/sony/pcsx/cheatpops.db
+        bndcp_psxdata "${ORIG_DIR}/cheatpops.db" /data/AppData/sony/pcsx/cheatpops.db
+    fi
+
+    #Set udev rule for controllers
+    bndcp_psxdata /media/data/system/20-joystick.rules /etc/udev/rules.d/20-joystick.rules
+    udevadm control --reload-rules
+    udevadm trigger
+
+    #Sync usb drive
+    echo 1 > /sys/class/leds/red/brightness
+    sync
+    echo 0 > /sys/class/leds/red/brightness
+
+    #Access Esc Menu from Select + Triangle
+    sleep 2s
+    cd /data/AppData/sony/pcsx
+    nohup /usr/sony/bin/ui_menu --power-off-enable &
+    sync
+}
 
 #Functions
 
@@ -93,9 +163,6 @@ manage_db() {
 	fi
 }
 
-
-#Main script
-
 #Notify start
 echo 0 > /sys/class/leds/green/brightness
 echo 1 > /sys/class/leds/red/brightness
@@ -103,75 +170,9 @@ echo 1 > /sys/class/leds/red/brightness
 #Wait for system and menu finish starting up, needed to have working sound
 sleep 8s
 
-#Needed for Esc Menu
-export PCSX_ESC_KEY=2
+main
 
-#Kill main menu, just in case anything was locked or in use
-killall ui_menu
-
-#Create, if needed, basic directory structure on USB drive
-mkdir -p "${ORIG_DIR}"
-mkdir -p /media/data/games
-mkdir -p /media/data/system
-
-#Extract/Bind Custom DB
-bndcp_psxdata "${ORIG_DB}" /gaadata/databases/regional.db
-
-#Bind USB drive game and data dirs, if they exist
-cd "${ORIG_DIR}"
-for D in *; do
-    echo 0 > /sys/class/leds/red/brightness
-    if [ -d "${D}" ]; then
-        #Create dir in /gaadata, if needed
-        if [ ! -d "/gaadata/${D}" ]; then
-            mkdir -p "/gaadata/${D}"
-        fi
-        #Bind usb drive dir into /gaadata
-        bndcp_psxdata "${ORIG_DIR}/${D}" "/gaadata/${D}"
-        #Create dir in /data/AppData/sony/pcsx/, if needed
-        if [ ! -d "/data/AppData/sony/pcsx/${D}/.pcsx" ]; then
-            mkdir -p "/data/AppData/sony/pcsx/${D}/.pcsx"
-        fi
-        #Bind usb drive dir into /data/AppData/sony/pcsx/
-        bndcp_psxdata "/media/data/games/${D}" "/data/AppData/sony/pcsx/${D}/.pcsx"
-        cp "${ORIG_DIR}/${D}/pcsx.cfg" "/media/data/games/${D}/pcsx.cfg"
-        #Edit database, if INI file is found
-        manage_db "${ORIG_DIR}/${D}/Game.ini" "${ORIG_DB}"
-    fi
-    echo 1 > /sys/class/leds/red/brightness
-done
-
-echo 0 > /sys/class/leds/red/brightness
-
-#Extract/Bind Preferences
-bndcp_psxdata /media/data/system/custom.pre /data/AppData/sony/ui/user.pre
-bndcp_psxdata /media/data/system/sonyapp-copylink /usr/sony/bin/sonyapp-copylink
-
-#Extract/Bind Custom UI
-bndcp_psxdata /media/data/GR /usr/sony/share/data/images/GR
-
-#Copy Cheats DB, if found
-if [ -e "${ORIG_DIR}/cheatpops.db" ]; then
-    touch /data/AppData/sony/pcsx/cheatpops.db
-    bndcp_psxdata "${ORIG_DIR}/cheatpops.db" /data/AppData/sony/pcsx/cheatpops.db
-fi
-
-#Set udev rule for controllers
-bndcp_psxdata /media/data/system/20-joystick.rules /etc/udev/rules.d/20-joystick.rules
-udevadm control --reload-rules
-udevadm trigger
-
-#Sync usb drive
-echo 1 > /sys/class/leds/red/brightness
-sync
-echo 0 > /sys/class/leds/red/brightness
-
-#Access Esc Menu from Select + Triangle
-sleep 2s
-cd /data/AppData/sony/pcsx
-nohup /usr/sony/bin/ui_menu --power-off-enable &
-sync
-
+#Notify end
 echo 1 > /sys/class/leds/green/brightness
 
 # sleep forever so the usb is never unmounted and Esc Menu works
