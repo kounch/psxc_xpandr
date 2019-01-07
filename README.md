@@ -91,9 +91,13 @@ Edit the file `data/system/20-joystick.rules`, replacing its content with
 
 Edit the file `data/system/sonyapp-copylink`, changing the number 25 in the second line (`COUNT_MAX=25`) for a greater number.
 
-### Adding cheats
+#### Adding cheats
 
 Copy or create a `cheatpops.db` file inside the directory `/games` of your USB drive.
+
+#### Using a customized pcsx binary
+
+You can change the extracted  `data/system/pcsx` emulator executable for another one, for example, that has the mipmap_patch applied (see [here](https://www.reddit.com/r/PlaystationClassic/comments/a7uhwm/remove_default_bilinear_filter/) for more info).
 
 #### Add a new game by editing manually `custom.db`
 If you prefer to add by yourself the games to the database, do not create a `Game.ini` file, open `games/custom.db` in an SQLite Editor of your choice, and insert new entries to the GAME table as follows:

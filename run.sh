@@ -72,9 +72,16 @@ main() {
 
     echo 0 > /sys/class/leds/red/brightness
 
+    #Bind again database file after possible editing
+    umount /gaadata/databases/regional.db
+    bndcp_psxdata "${ORIG_DB}" /gaadata/databases/regional.db
+
     #Extract/Bind Preferences
     bndcp_psxdata /media/data/system/custom.pre /data/AppData/sony/ui/user.pre
     bndcp_psxdata /media/data/system/sonyapp-copylink /usr/sony/bin/sonyapp-copylink
+
+    #Extract/bind pcsx binary
+    bndcp_psxdata /media/data/system/pcsx /usr/sony/bin/pcsx
 
     #Extract/Bind Custom UI
     bndcp_psxdata /media/data/GR /usr/sony/share/data/images/GR
@@ -111,6 +118,7 @@ bndcp_psxdata() {
     if [ -e "${DST_FILE}" ]; then
         if [ ! -e "${SRC_FILE}" ]; then
             cp -r "${DST_FILE}" "${SRC_FILE}"
+            sync
         fi
         mount -o bind "${SRC_FILE}" "${DST_FILE}"
     fi
@@ -160,6 +168,7 @@ manage_db() {
 		done
 
         mv -f "${TMP_DB}" "${DB_FILE}"
+        sync
 	fi
 }
 
