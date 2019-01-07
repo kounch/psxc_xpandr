@@ -18,6 +18,7 @@ Format a compatible USB drive using FAT32 and name it SONY.
 
 Download the latest release file [from here](https://github.com/kounch/psc_xpandr/releases/latest). Unzip its contents and copy the folder `691843bb-62d6-4423-a105-19c06af91a8c` to the root of the drive.
 
+Place your game files in numbered directories inside a `games` folder in the root of the drive, as explained [later in this text](#GameINI).
 
 ## Use
 
@@ -42,12 +43,60 @@ On first use with a blank USB drive, the following folders and files are copied 
     +-custom.db
 ```
 
-These can be customized to add or replace virtually the games inside the PlayStation Classic.
+These can be customized to change the UI, add support for a second controller when using a USB hub, etc. Keep reading for more instructions.
 
 ### Customization
 
-#### Add a new game
-To add new games, open `games/custom.db` in an SQLite Editor of your choice, and insert new entries to the GAME table as follows:
+#### <a name="GameINI"></a>Add a new game by using BIN/CUE files and a `Game.ini` file
+In the `games` dir create a new folder with a numerical identifier (`GAME_ID`), which has to be unique. Use a number between 1 and 20 if you desire to virtually replace an existing game. Use a number greater than 20 if you want to add virtually a new game. For new games, do not make gaps in the `GAME_ID` numeration (i.e use 21,22,23... and not 21,25...)
+
+Inside of that directory you need to put at least those files:
+* `BASENAME.cue`: Disc CUE file (normally, use as `BASENAME` string the original disc identifier)
+* `BASENAME.bin`: Disc BIN (use the same `BASENAME` string)
+* `BASENAME.png`: PNG image with less than 512x521 pixels size (use the same `BASENAME`)
+* `pcsx.cfg`: PCSX configuration file for the game (a sample file is available to download [here](https://raw.githubusercontent.com/kounch/psxc_xpandr/master/pcsx.cfg))
+* `Game.ini`: Game description file with the following format:
+
+```
+[Game]
+Discs=...
+Title=...
+Publisher=...
+Players=...
+Year=...
+```
+
+Where the different fields must be filled as follows:
+
+| Field     | Description                                                           |
+|-----------|-----------------------------------------------------------------------|
+| Discs     | Name (in order) of the BIN/CUE files of the game, separated by commas |
+| Title     | Game Title                                                            |
+| Publisher | Game Publisher                                                        |
+| Players   | Number of players (1 or 2)                                            |
+| Year      | Game release year                                                     |
+
+#### Modify User Interface
+
+Edit the files in data/GR directory as you wish. For example, to change the UI background, edit the `JP_US_BG.png` file.
+
+#### Add support for second controller when using a USB hub
+
+Edit the file `data/system/20-joystick.rules`, replacing its content with
+
+    KERNEL=="js0",SUBSYSTEMS=="input",SYMLINK+="input/joystick0"
+    KERNEL=="js1",SUBSYSTEMS=="input",SYMLINK+="input/joystick1"
+
+#### Adding support for more than 25 games
+
+Edit the file `data/system/sonyapp-copylink`, changing the number 25 in the second line (`COUNT_MAX=25`) for a greater number.
+
+### Adding cheats
+
+Copy or create a `cheatpops.db` file inside the directory `/games` of your USB drive.
+
+#### Add a new game by editing manually `custom.db`
+If you prefer to add by yourself the games to the database, do not create a `Game.ini` file, open `games/custom.db` in an SQLite Editor of your choice, and insert new entries to the GAME table as follows:
 
 | Field                | Content description                    |
 |----------------------|----------------------------------------|
@@ -75,31 +124,12 @@ Inside of that directory you need to put at least those files:
 * `BASENAME.png`: PNG image with less than 512x521 pixels size (use `BASENAME` value from the `DISC` table)
 * `pcsx.cfg`: PCSX configuration file for the game (a sample file is available to download [here](https://raw.githubusercontent.com/kounch/psxc_xpandr/master/pcsx.cfg))
 
-#### Replace an existing game
+#### Replace an existing game changing `custom.db`
 To replace an existing game, open `games/custom.db` in an SQLite Editor of your choice.
 
 Modify the entries for the existing game in `GAME` and `DISC` table, keeping the format.
 
 Then go to games dir and create a new folder with the GAME_ID, and add all the necessary files.
-
-#### Modify User Interface
-
-Edit the files in data/GR directory as you wish. For example, to change the UI background, edit the `JP_US_BG.png` file.
-
-#### Add support for second controller when using a USB hub
-
-Edit the file `data/system/20-joystick.rules`, replacing its content with
-
-    KERNEL=="js0",SUBSYSTEMS=="input",SYMLINK+="input/joystick0"
-    KERNEL=="js1",SUBSYSTEMS=="input",SYMLINK+="input/joystick1"
-
-#### Adding support for more than 25 games
-
-Edit the file `data/system/sonyapp-copylink`, changing the number 25 in the second line (`COUNT_MAX=25`) for a greater number.
-
-### Adding cheats
-
-Copy or create a `cheatpops.db` file inside the directory `/games` of your USB drive.
 
 ## Credits
 
@@ -110,6 +140,8 @@ Based on:
 * PCSX ReARMed, PCSX port for ARM by [Notaz](https://notaz.gp2x.de) (info about cheatpops.db)
 * Reddit's rubixcube6 explanation on [how to make custom themes](https://redd.it/a5g5kx)
 * Reddit's NonyaDB explanation to [overcome 25 games limit](https://www.reddit.com/r/PlaystationClassic/comments/a44ka6/add_custom_games_on_usb_storage_with_gpghax/ebci4hg/)
+* Neeraj Kumar's [instructions for cross-compiling to ARM](https://neerajcodes.wordpress.com/2017/08/29/toolchain-cross-compilation-using-crosstool-ng/)
+* Vicente Hernando's [instructions to cross-compile SQLite3]()
 
 ## FAQ
 
@@ -130,7 +162,7 @@ A lot of work has been made to try to make it as failsafe as possible, however, 
 ### How does it work?
 
 The file `LUPDATA.bin` inside the folder `691843bb-62d6-4423-a105-19c06af91a8` is a shell script (source available [here](https://github.com/kounch/psxc_xpandr)), encrypted and signed so that the internal update system of an original PlayStation Classic copies it to a temporary folder an executes its contents.
-Then, the script stops the main console menu, mounts virtual and temporal files and folders from the USB stick, reconfigures temporarily the system, and launchs again the main menu software.
+Then, the script stops the main console menu, mounts virtual and temporal files and folders from the USB stick, reconfigures temporarily the system, editing if necessary the database copy using the included sqlite3 binary, and launchs again the main menu software.
 This way, if the PlayStation Classic is powered off, and then started again without the USB drive, everything should work as if no modifications were made.
 
 ## Copyright
