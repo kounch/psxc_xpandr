@@ -65,7 +65,7 @@ main() {
             bndcp_psxdata "/media/data/games/${D}" "/data/AppData/sony/pcsx/${D}/.pcsx"
             cp "${ORIG_DIR}/${D}/pcsx.cfg" "/media/data/games/${D}/pcsx.cfg"
             #Edit database, if INI file is found
-            manage_db "${ORIG_DIR}/${D}/Game.ini" "${ORIG_DB}"
+            manage_db "${ORIG_DIR}/${D}/Game.ini" "${ORIG_DB}" "${D}"
         fi
         echo 1 > /sys/class/leds/red/brightness
     done
@@ -128,6 +128,7 @@ bndcp_psxdata() {
 manage_db() {
     INI_FILE=$1
     DB_FILE=$2
+    GAME_ID=$3
     SQLITE_BIN=/media/691843bb-62d6-4423-a105-19c06af91a8c/sqlite3
     TMP_DB=/tmp/tmp_xpandr.db
 
@@ -141,28 +142,28 @@ manage_db() {
 		G_PLAYERS=`grep 'Players=' "${INI_FILE}" | awk -F'=' '{print $2}'`
 		G_DISCS=`grep 'Discs=' "${INI_FILE}" | awk -F'=' '{print $2}' | sed 's/,/ /g'`
 
-		G_ROW=`${SQLITE_BIN} "${TMP_DB}" "SELECT * FROM GAME WHERE GAME_ID=${D};"`
+		G_ROW=`${SQLITE_BIN} "${TMP_DB}" "SELECT * FROM GAME WHERE GAME_ID=${GAME_ID};"`
 		if [ -z "${G_ROW}" ]; then
 			Q_TXT="INSERT INTO GAME (GAME_ID,GAME_TITLE_STRING,PUBLISHER_NAME"
 			Q_TXT="${Q_TXT},RELEASE_YEAR,PLAYERS,RATING_IMAGE,GAME_MANUAL_QR_IMAGE"
-			Q_TXT="${Q_TXT}) VALUES (${D},'${G_TITLE}','${G_PUBLISHER}',${G_YEAR}"
+			Q_TXT="${Q_TXT}) VALUES (${GAME_ID},'${G_TITLE}','${G_PUBLISHER}',${G_YEAR}"
 			Q_TXT="${Q_TXT},${G_PLAYERS},'CERO_A','QR_Code_GM');"
 		else
-			Q_TXT="UPDATE GAME SET GAME_ID=${D},GAME_TITLE_STRING='${G_TITLE}'"
+			Q_TXT="UPDATE GAME SET GAME_ID=${GAME_ID},GAME_TITLE_STRING='${G_TITLE}'"
 			Q_TXT="${Q_TXT},PUBLISHER_NAME='${G_PUBLISHER}',RELEASE_YEAR=${G_YEAR}"
 			Q_TXT="${Q_TXT},PLAYERS=${G_PLAYERS}"
 			Q_TXT="${Q_TXT},RATING_IMAGE='CERO_A',GAME_MANUAL_QR_IMAGE='QR_Code_GM'"
-			Q_TXT="${Q_TXT} WHERE GAME_ID=${D};"
+			Q_TXT="${Q_TXT} WHERE GAME_ID=${GAME_ID};"
 		fi
 		SQL_QUERY=`${SQLITE_BIN} "${TMP_DB}" "${Q_TXT}"`
 		
-		Q_TXT="DELETE FROM DISC WHERE GAME_ID=${D};"
+		Q_TXT="DELETE FROM DISC WHERE GAME_ID=${GAME_ID};"
 		SQL_QUERY=`${SQLITE_BIN} "${TMP_DB}" "${Q_TXT}"`
 		
 		declare -i DISC_ID=1
 		for R in $G_DISCS; do
 			Q_TXT="INSERT INTO DISC (GAME_ID,DISC_NUMBER,BASENAME)"
-			Q_TXT="${Q_TXT} VALUES (${D},${DISC_ID},'${R}');"
+			Q_TXT="${Q_TXT} VALUES (${GAME_ID},${DISC_ID},'${R}');"
 			SQL_QUERY=`${SQLITE_BIN} "${TMP_DB}" "${Q_TXT}"`
 			DISC_ID=$DISC_ID+1
 		done
