@@ -29,6 +29,7 @@
 
 #Main script
 main() {
+    XPANDR_PATH=/media/691843bb-62d6-4423-a105-19c06af91a8c/
     ORIG_DIR=/media/games
     ORIG_DB=${ORIG_DIR}/custom.db
 
@@ -37,6 +38,11 @@ main() {
 
     #Kill main menu, just in case anything was locked or in use
     killall ui_menu
+
+    #Show splash screen
+    if [ -e "${XPANDR_PATH}/splash.jpg" ]; then
+        "${XPANDR_PATH}/display_xpandr" "${XPANDR_PATH}/splash.jpg" &
+    fi
 
     #Create, if needed, basic directory structure on USB drive
     mkdir -p "${ORIG_DIR}"
@@ -102,6 +108,9 @@ main() {
     sync
     echo 0 > /sys/class/leds/red/brightness
 
+    #Remove splash screen
+    killall display_xpandr
+
     #Access Esc Menu from Select + Triangle
     sleep 2s
     cd /data/AppData/sony/pcsx
@@ -132,45 +141,45 @@ manage_db() {
     SQLITE_BIN=/media/691843bb-62d6-4423-a105-19c06af91a8c/sqlite3
     TMP_DB=/tmp/tmp_xpandr.db
 
-	if [ -f "${INI_FILE}" ]; then
+    if [ -f "${INI_FILE}" ]; then
         cp -f "${DB_FILE}" "${TMP_DB}"
 
-		dos2unix "${INI_FILE}" >/dev/null 2>&1
-		G_TITLE=`grep 'Title=' "${INI_FILE}" | awk -F'=' '{print $2}' | sed 's/'"'"'/'"''"'/g'`
-		G_PUBLISHER=`grep 'Publisher=' "${INI_FILE}" | awk -F'=' '{print $2}' | sed 's/'"'"'/'"''"'/g'`
-		G_YEAR=`grep 'Year=' "${INI_FILE}" | awk -F'=' '{print $2}'`
-		G_PLAYERS=`grep 'Players=' "${INI_FILE}" | awk -F'=' '{print $2}'`
-		G_DISCS=`grep 'Discs=' "${INI_FILE}" | awk -F'=' '{print $2}' | sed 's/,/ /g'`
+        dos2unix "${INI_FILE}" >/dev/null 2>&1
+        G_TITLE=`grep 'Title=' "${INI_FILE}" | awk -F'=' '{print $2}' | sed 's/'"'"'/'"''"'/g'`
+        G_PUBLISHER=`grep 'Publisher=' "${INI_FILE}" | awk -F'=' '{print $2}' | sed 's/'"'"'/'"''"'/g'`
+        G_YEAR=`grep 'Year=' "${INI_FILE}" | awk -F'=' '{print $2}'`
+        G_PLAYERS=`grep 'Players=' "${INI_FILE}" | awk -F'=' '{print $2}'`
+        G_DISCS=`grep 'Discs=' "${INI_FILE}" | awk -F'=' '{print $2}' | sed 's/,/ /g'`
 
-		G_ROW=`${SQLITE_BIN} "${TMP_DB}" "SELECT * FROM GAME WHERE GAME_ID=${GAME_ID};"`
-		if [ -z "${G_ROW}" ]; then
-			Q_TXT="INSERT INTO GAME (GAME_ID,GAME_TITLE_STRING,PUBLISHER_NAME"
-			Q_TXT="${Q_TXT},RELEASE_YEAR,PLAYERS,RATING_IMAGE,GAME_MANUAL_QR_IMAGE"
-			Q_TXT="${Q_TXT}) VALUES (${GAME_ID},'${G_TITLE}','${G_PUBLISHER}',${G_YEAR}"
-			Q_TXT="${Q_TXT},${G_PLAYERS},'CERO_A','QR_Code_GM');"
-		else
-			Q_TXT="UPDATE GAME SET GAME_ID=${GAME_ID},GAME_TITLE_STRING='${G_TITLE}'"
-			Q_TXT="${Q_TXT},PUBLISHER_NAME='${G_PUBLISHER}',RELEASE_YEAR=${G_YEAR}"
-			Q_TXT="${Q_TXT},PLAYERS=${G_PLAYERS}"
-			Q_TXT="${Q_TXT},RATING_IMAGE='CERO_A',GAME_MANUAL_QR_IMAGE='QR_Code_GM'"
-			Q_TXT="${Q_TXT} WHERE GAME_ID=${GAME_ID};"
-		fi
-		SQL_QUERY=`${SQLITE_BIN} "${TMP_DB}" "${Q_TXT}"`
-		
-		Q_TXT="DELETE FROM DISC WHERE GAME_ID=${GAME_ID};"
-		SQL_QUERY=`${SQLITE_BIN} "${TMP_DB}" "${Q_TXT}"`
-		
-		declare -i DISC_ID=1
-		for R in $G_DISCS; do
-			Q_TXT="INSERT INTO DISC (GAME_ID,DISC_NUMBER,BASENAME)"
-			Q_TXT="${Q_TXT} VALUES (${GAME_ID},${DISC_ID},'${R}');"
-			SQL_QUERY=`${SQLITE_BIN} "${TMP_DB}" "${Q_TXT}"`
-			DISC_ID=$DISC_ID+1
-		done
+        G_ROW=`${SQLITE_BIN} "${TMP_DB}" "SELECT * FROM GAME WHERE GAME_ID=${GAME_ID};"`
+        if [ -z "${G_ROW}" ]; then
+            Q_TXT="INSERT INTO GAME (GAME_ID,GAME_TITLE_STRING,PUBLISHER_NAME"
+            Q_TXT="${Q_TXT},RELEASE_YEAR,PLAYERS,RATING_IMAGE,GAME_MANUAL_QR_IMAGE"
+            Q_TXT="${Q_TXT}) VALUES (${GAME_ID},'${G_TITLE}','${G_PUBLISHER}',${G_YEAR}"
+            Q_TXT="${Q_TXT},${G_PLAYERS},'CERO_A','QR_Code_GM');"
+        else
+            Q_TXT="UPDATE GAME SET GAME_ID=${GAME_ID},GAME_TITLE_STRING='${G_TITLE}'"
+            Q_TXT="${Q_TXT},PUBLISHER_NAME='${G_PUBLISHER}',RELEASE_YEAR=${G_YEAR}"
+            Q_TXT="${Q_TXT},PLAYERS=${G_PLAYERS}"
+            Q_TXT="${Q_TXT},RATING_IMAGE='CERO_A',GAME_MANUAL_QR_IMAGE='QR_Code_GM'"
+            Q_TXT="${Q_TXT} WHERE GAME_ID=${GAME_ID};"
+        fi
+        SQL_QUERY=`${SQLITE_BIN} "${TMP_DB}" "${Q_TXT}"`
+        
+        Q_TXT="DELETE FROM DISC WHERE GAME_ID=${GAME_ID};"
+        SQL_QUERY=`${SQLITE_BIN} "${TMP_DB}" "${Q_TXT}"`
+        
+        declare -i DISC_ID=1
+        for R in $G_DISCS; do
+            Q_TXT="INSERT INTO DISC (GAME_ID,DISC_NUMBER,BASENAME)"
+            Q_TXT="${Q_TXT} VALUES (${GAME_ID},${DISC_ID},'${R}');"
+            SQL_QUERY=`${SQLITE_BIN} "${TMP_DB}" "${Q_TXT}"`
+            DISC_ID=$DISC_ID+1
+        done
 
         mv -f "${TMP_DB}" "${DB_FILE}"
         sync
-	fi
+    fi
 }
 
 #Notify start

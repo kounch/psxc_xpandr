@@ -99,6 +99,10 @@ Copy or create a `cheatpops.db` file inside the directory `/games` of your USB d
 
 You can change the extracted  `data/system/pcsx` emulator executable for another one, for example, that has the mipmap_patch applied (see [here](https://www.reddit.com/r/PlaystationClassic/comments/a7uhwm/remove_default_bilinear_filter/) for more info).
 
+#### Changing or removing the splash screen
+
+It is possible to change the splash screen by replacing the `splash.jpg` file in the folder `691843bb-62d6-4423-a105-19c06af91a8c`. You can also remove the splash screen if you delete the file from the drive.
+
 #### Add a new game by editing manually `custom.db`
 If you prefer to add by yourself the games to the database, do not create a `Game.ini` file, open `games/custom.db` in an SQLite Editor of your choice, and insert new entries to the GAME table as follows:
 
