@@ -32,6 +32,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int main(int argc, char *argv[])
 {
+    if (argc != 2)
+    {
+        printf("Bad args received!!. Arg Count:%i\n", argc);
+        return 1;
+    }
     SDL_Window *window;
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_JPG);
@@ -40,7 +45,7 @@ int main(int argc, char *argv[])
     if (window == NULL)
     {
         printf("Could not create window: %s\n", SDL_GetError());
-        return 1;
+        return 2;
     }
     else
     {
@@ -48,20 +53,23 @@ int main(int argc, char *argv[])
         if (renderer == NULL)
         {
             printf("Could not create renderer: %s\n", SDL_GetError());
-            return 1;
+            return 3;
         }
         else
         {
-            SDL_Surface *image = IMG_Load(argv[1]);
-            SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, image);
-            SDL_RenderCopy(renderer, texture, NULL, NULL);
-            SDL_RenderPresent(renderer);
-            while (1)
+            if (argv[1][0] == '/')
             {
-                SDL_Delay(1000);
+                SDL_Surface *image = IMG_Load(argv[1]);
+                SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, image);
+                SDL_RenderCopy(renderer, texture, NULL, NULL);
+                SDL_RenderPresent(renderer);
+                while (1)
+                {
+                    SDL_Delay(1000);
+                }
+                SDL_DestroyTexture(texture);
+                SDL_FreeSurface(image);
             }
-            SDL_DestroyTexture(texture);
-            SDL_FreeSurface(image);
             SDL_DestroyRenderer(renderer);
         }
         SDL_DestroyWindow(window);
