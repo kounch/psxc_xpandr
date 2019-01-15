@@ -26,9 +26,11 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <stdio.h>
 #include <SDL.h>
 #include <SDL_image.h>
-#include <stdio.h>
+
+#include "display_xpandr.h"
 
 int main(int argc, char *argv[])
 {
@@ -37,11 +39,13 @@ int main(int argc, char *argv[])
         printf("Bad args received!!. Arg Count:%i\n", argc);
         return 1;
     }
-    SDL_Window *window;
+
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_JPG);
 
-    window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, SDL_WINDOW_FULLSCREEN);
+    SDL_Window *window;
+    window = SDL_CreateWindow("", SDL_WINDOW_X, SDL_WINDOW_Y, SDL_WINDOW_W, SDL_WINDOW_H,
+                              SDL_WINDOW_FLAGS);
     if (window == NULL)
     {
         printf("Could not create window: %s\n", SDL_GetError());
@@ -57,15 +61,27 @@ int main(int argc, char *argv[])
         }
         else
         {
+#ifdef _WIN32
+            if (argv[1][1] == ':')
+#else
             if (argv[1][0] == '/')
+#endif
             {
                 SDL_Surface *image = IMG_Load(argv[1]);
                 SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, image);
                 SDL_RenderCopy(renderer, texture, NULL, NULL);
                 SDL_RenderPresent(renderer);
-                while (1)
+
+                SDL_Event event;
+                int run_display = 1;
+                while (run_display)
                 {
-                    SDL_Delay(1000);
+                    SDL_PollEvent(&event);
+                    if (event.type == SDL_QUIT)
+                    {
+                        run_display = 0;
+                    }
+                    SDL_Delay(100);
                 }
                 SDL_DestroyTexture(texture);
                 SDL_FreeSurface(image);
