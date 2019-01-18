@@ -48,7 +48,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SDL_RENDERER_FLAGS SDL_RENDERER_SOFTWARE
 
 #define LOG_FNAME "/tmp/xpandr.log"
-#define FONT_PATH "/Users/kounch/Developer/PlayStationClassic/psxc_xpandr/SST-Medium.ttf"
+#define FONT_PATH "/Users/Shared/SST-Medium.ttf"
 
 #elif _WIN32
 #define SDL_WINDOW_X SDL_WINDOWPOS_CENTERED
@@ -58,8 +58,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SDL_WINDOW_FLAGS SDL_WINDOW_SHOWN
 #define SDL_RENDERER_FLAGS 0
 
-#define LOG_FNAME "D:\\dn10434\\Downloads\\display\\xpandr.log"
-#define FONT_PATH "D:\\dn10434\\Downloads\\display\\SST-Medium.ttf"
+#define LOG_FNAME "C:\\Windows\\Temp\\xpandr.log"
+#define FONT_PATH "C:\\Windows\\Fonts\\SST-Medium.ttf"
 
 #else
 #define SDL_WINDOW_X SDL_WINDOWPOS_UNDEFINED

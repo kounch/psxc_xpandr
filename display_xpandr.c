@@ -101,11 +101,11 @@ void show_logs(SDL_Window *window)
         printf("Could not get surface: %s\n", SDL_GetError());
         return;
     }
-    box.w = image->w / 5 * 3;
+    box.w = image->w / 8 * 6;
     box.h = image->h / 2;
-    box.x = image->w / 5;
+    box.x = image->w / 8;
     box.y = box.h / 4;
-    if (check_file(LOG_FNAME)) 
+    if (check_file(LOG_FNAME))
     {
         draw_txt(window, box);
     }
@@ -133,6 +133,7 @@ void draw_txt(SDL_Window *window, SDL_Rect box)
     read_txt(LOG_FNAME, textlines);
     for (i = 0; i < LINES; i++)
     {
+        text_box.w = box.w;
         draw_txtline(window, &text_box, textlines[i]);
     }
 
@@ -150,19 +151,20 @@ void draw_txtline(SDL_Window *window, SDL_Rect *text_box, char *txtline)
     SDL_Surface *surfaceMessage;
     SDL_Texture *Message;
     SDL_Color textColor = {255, 255, 255};
-    
+    SDL_Rect line_box;
+
     if (starts_with(txtline, "ERR"))
     {
         textColor.r = 255;
         textColor.g = 0;
         textColor.b = 0;
-    } 
-    else if(starts_with(txtline, "WARN"))
+    }
+    else if (starts_with(txtline, "WARN"))
     {
         textColor.r = 255;
         textColor.g = 255;
         textColor.b = 0;
-    }    
+    }
 
     font = TTF_OpenFont(FONT_PATH, 24);
     if (font == NULL)
@@ -170,12 +172,17 @@ void draw_txtline(SDL_Window *window, SDL_Rect *text_box, char *txtline)
         printf("Error opening font: %s\n", TTF_GetError());
         return;
     }
-    renderer = SDL_GetRenderer(window);
+
+    text_box->w = 0;
+    text_box->h = TTF_FontLineSkip(font);
     if (strlen(txtline))
     {
-        TTF_SizeText(font, txtline, &text_box->w, &text_box->h);
-        surfaceMessage = TTF_RenderText_Blended(font, txtline, textColor);
+        renderer = SDL_GetRenderer(window);
+        surfaceMessage = TTF_RenderText_Blended_Wrapped(font, txtline, textColor, text_box->w);
+
         Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+        text_box->w = surfaceMessage->w;
+        text_box->h = surfaceMessage->h;
         SDL_RenderCopy(renderer, Message, NULL, text_box);
         SDL_DestroyTexture(Message);
         SDL_FreeSurface(surfaceMessage);
@@ -224,9 +231,9 @@ void read_txt(char *fname, char *txtlines[])
 
 _Bool starts_with(const char *string, const char *prefix)
 {
-    while(*prefix)
+    while (*prefix)
     {
-        if(*prefix++ != *string++)
+        if (*prefix++ != *string++)
             return 0;
     }
     return 1;
