@@ -45,6 +45,7 @@ main() {
     fi
 
     #Create, if needed, basic directory structure on USB drive
+    log "Initializing..."
     mkdir -p "${ORIG_DIR}"
     mkdir -p /media/data/games
     mkdir -p /media/data/system
@@ -57,6 +58,7 @@ main() {
     for D in *; do
         echo 0 > /sys/class/leds/red/brightness
         if [ -d "${D}" ]; then
+            log "  Folder: ${D}"
             #Create dir in /gaadata, if needed
             if [ ! -d "/gaadata/${D}" ]; then
                 mkdir -p "/gaadata/${D}"
@@ -81,6 +83,8 @@ main() {
     #Bind again database file after possible editing
     umount /gaadata/databases/regional.db
     bndcp_psxdata "${ORIG_DB}" /gaadata/databases/regional.db
+
+    log "Finishing..."
 
     #Extract/Bind Preferences
     bndcp_psxdata /media/data/system/custom.pre /data/AppData/sony/ui/user.pre
@@ -145,7 +149,9 @@ manage_db() {
         cp -f "${DB_FILE}" "${TMP_DB}"
 
         dos2unix "${INI_FILE}" >/dev/null 2>&1
-        G_TITLE=`grep 'Title=' "${INI_FILE}" | awk -F'=' '{print $2}' | sed 's/'"'"'/'"''"'/g'`
+        G_TITLE=`grep 'Title=' "${INI_FILE}" | awk -F'=' '{print $2}'`
+        log "  Game: ${G_TITLE}"
+        G_TITLE=`echo ${G_TITLE} | sed 's/'"'"'/'"''"'/g'`
         G_PUBLISHER=`grep 'Publisher=' "${INI_FILE}" | awk -F'=' '{print $2}' | sed 's/'"'"'/'"''"'/g'`
         G_YEAR=`grep 'Year=' "${INI_FILE}" | awk -F'=' '{print $2}'`
         G_PLAYERS=`grep 'Players=' "${INI_FILE}" | awk -F'=' '{print $2}'`
@@ -182,6 +188,13 @@ manage_db() {
     fi
 }
 
+log() {
+    LOG_TXT=$1
+
+    echo "${LOG_TXT}" >> /tmp/xpandr.log
+    sync
+}
+
 #Notify start
 echo 0 > /sys/class/leds/green/brightness
 echo 1 > /sys/class/leds/red/brightness
@@ -196,3 +209,5 @@ echo 1 > /sys/class/leds/green/brightness
 
 # sleep forever so the usb is never unmounted and Esc Menu works
 while :; do sleep 10; done
+
+
