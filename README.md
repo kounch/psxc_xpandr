@@ -177,7 +177,7 @@ This way, if the PlayStation Classic is powered off, and then started again with
 
 If you are using `Game.ini` files, just delete the `custom.db` file from the USB media and start the console. The game database will be recreated from scratch, using only the existing folders. If you changed manually the database file, you have to remove the corresponding entries in GAME and DISC tables.
 
-### Does this always edit the `custom.db' file on start?
+### Is the custom.db file always edited on start?
 
 Whenever the script finds a `Game.ini` file, the database file is edited accordingly. If you don't want this to happen, just delete or rename the `Game.ini` for each affected game.
 
