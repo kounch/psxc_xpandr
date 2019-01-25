@@ -2,7 +2,7 @@
 
 # BSD 2-Clause License
 # 
-# Copyright (c) 2018, kounch
+# Copyright (c) 2019, kounch
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@ main() {
     XPANDR_PATH=/media/691843bb-62d6-4423-a105-19c06af91a8c/
     ORIG_DIR=/media/games
     ORIG_DB=${ORIG_DIR}/custom.db
+    LANG=5 #Spanish as default
 
     #Needed for Esc Menu
     export PCSX_ESC_KEY=2
@@ -45,7 +46,7 @@ main() {
     fi
 
     #Create, if needed, basic directory structure on USB drive
-    log "Initializing..."
+    log_line "Initializing..." 1
     mkdir -p "${ORIG_DIR}"
     mkdir -p /media/data/games
     mkdir -p /media/data/system
@@ -53,12 +54,19 @@ main() {
     #Extract/Bind Custom DB
     bndcp_psxdata "${ORIG_DB}" /gaadata/databases/regional.db
 
+    #Extract/Bind Preferences
+    bndcp_psxdata /media/data/system/custom.pre /data/AppData/sony/ui/user.pre
+
+    #Get language config
+    get_lang
+
     #Bind USB drive game and data dirs, if they exist
+    log_line "Analyzing games folder in USB media..." 2
     cd "${ORIG_DIR}"
     for D in *; do
         echo 0 > /sys/class/leds/red/brightness
         if [ -d "${D}" ]; then
-            log "  Folder: ${D}"
+            log_line "   Folder: ${D}" 3
             #Create dir in /gaadata, if needed
             if [ ! -d "/gaadata/${D}" ]; then
                 mkdir -p "/gaadata/${D}"
@@ -84,14 +92,10 @@ main() {
     umount /gaadata/databases/regional.db
     bndcp_psxdata "${ORIG_DB}" /gaadata/databases/regional.db
 
-    log "Finishing..."
+    log_line "Processing preference files..." 5
 
-    #Extract/Bind Preferences
-    bndcp_psxdata /media/data/system/custom.pre /data/AppData/sony/ui/user.pre
+    #Extract/Bind other Preferences
     bndcp_psxdata /media/data/system/sonyapp-copylink /usr/sony/bin/sonyapp-copylink
-
-    #Extract/bind pcsx binary
-    bndcp_psxdata /media/data/system/pcsx /usr/sony/bin/pcsx
 
     #Extract/Bind Custom UI
     bndcp_psxdata /media/data/GR /usr/sony/share/data/images/GR
@@ -102,10 +106,17 @@ main() {
         bndcp_psxdata "${ORIG_DIR}/cheatpops.db" /data/AppData/sony/pcsx/cheatpops.db
     fi
 
+    log_line "Processing binary and system files..." 6
+
+    #Extract/bind pcsx binary
+    bndcp_psxdata /media/data/system/pcsx /usr/sony/bin/pcsx
+
     #Set udev rule for controllers
     bndcp_psxdata /media/data/system/20-joystick.rules /etc/udev/rules.d/20-joystick.rules
     udevadm control --reload-rules
     udevadm trigger
+
+    log_line "Finishing..." 7
 
     #Sync usb drive
     echo 1 > /sys/class/leds/red/brightness
@@ -150,7 +161,7 @@ manage_db() {
 
         dos2unix "${INI_FILE}" >/dev/null 2>&1
         G_TITLE=`grep 'Title=' "${INI_FILE}" | awk -F'=' '{print $2}'`
-        log "  Game: ${G_TITLE}"
+        log_line "     Game: ${G_TITLE}" 4
         G_TITLE=`echo ${G_TITLE} | sed 's/'"'"'/'"''"'/g'`
         G_PUBLISHER=`grep 'Publisher=' "${INI_FILE}" | awk -F'=' '{print $2}' | sed 's/'"'"'/'"''"'/g'`
         G_YEAR=`grep 'Year=' "${INI_FILE}" | awk -F'=' '{print $2}'`
@@ -188,10 +199,33 @@ manage_db() {
     fi
 }
 
-log() {
-    LOG_TXT=$1
+#Get language configuration
+get_lang() {
+    L_CODE=`grep iUiUserSettingSelectedLanguageId /media/data/system/custom.pre | awk -F'=' '{print $2}'`
+    if [ "${L_CODE}" != "" ]; then
+      LANG=${L_CODE}
+    fi
+    
+    if [ "${L_CODE}" = "5" ]; then
+        log_line "Detectado Idioma Castellano" 15
+    fi
+}
 
-    echo "${LOG_TXT}" >> /tmp/xpandr.log
+#Logging function with translation
+log_line() {
+    LOG_TXT=$1
+    LOG_CODE=$2
+    LANG_FILE=/media/691843bb-62d6-4423-a105-19c06af91a8c/${LANG}.strings
+
+    if [ -f "${LANG_FILE}" ]; then
+        LANG_LINE=`head -${LOG_CODE} "${LANG_FILE}" | tail -1`
+    fi
+
+    if [ "${LANG_LINE}" = "" ]; then
+        echo "${LOG_TXT}" >> /tmp/xpandr.log
+    else
+        eval echo "${LANG_LINE}" >> /tmp/xpandr.log
+    fi
     sync
 }
 
@@ -209,5 +243,3 @@ echo 1 > /sys/class/leds/green/brightness
 
 # sleep forever so the usb is never unmounted and Esc Menu works
 while :; do sleep 10; done
-
-
