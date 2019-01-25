@@ -3,8 +3,8 @@ A safe hack to expand and/or replace virtually games of a PlayStation Classic us
 
 Features:
 * Minimal modification of PlayStation Classic internal storage
-* Can keep or virtually replace the original installed games
-* Can add new games (loaded from USB drive instead or internal memory)
+* Can keep or virtually replace the original installed games (loaded from USB drive instead or internal memory)
+* Can add new games (loaded also from USB)
 * Extracts automatically most of the needed files when used on a blank USB drive
 * Adds support for access to the console emulator menu using simultaneously the buttons `Select` and `Triangle` of a controller
 * Optionally compatible to play with two controllers, using a USB hub
