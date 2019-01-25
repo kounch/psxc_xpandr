@@ -80,6 +80,16 @@ Where the different fields must be filled as follows:
 | Players   | Number of players (1 or 2)                                            |
 | Year      | Game release year                                                     |
 
+For example, for a game called "Res Evl 2", with two discs with BIN/CUE files called `SUES-00972.bin`, `SUES-00972.cue`, `SUES-10972.bin`, `SUES-10972.cue`, one player game and published in 1997 by "Pepi Interactive", it would be:
+```
+[Game]
+Discs=SUES-00972,SUES-10972
+Title=Res Evl 2
+Publisher=Pepi Interactive
+Players=1
+Year=1997
+```
+
 #### Modify User Interface
 
 Edit the files inside `data/GR` directory as you wish. For example, to change the UI background, edit the `JP_US_BG.png` file.
@@ -169,7 +179,7 @@ Files/directories that the script creates in the internal media:
 
 ### Can it brick my console?
 
-A lot of work has been made to try to make it as failsafe as possible, however, no warranties are made or responsabilities taken for any damage that you could make to your console by using it. Please, don't do if you if you are not sure of what you are doing.
+The probability is almost none, as none of the original files in the console are modified. A lot of work has been made to try to make it as failsafe as possible, however, no warranties are made or responsabilities taken for any damage that you could make to your console by using it. Please, don't do if you if you are not sure of what you are doing.
 
 ### How does it work?
 
@@ -179,7 +189,7 @@ This way, if the PlayStation Classic is powered off, and then started again with
 
 ### I have deleted a game folder, but the game is still shown
 
-If you are using `Game.ini` files, just delete the `custom.db` file from the USB media and start the console. The game database will be recreated from scratch, using only the existing folders. If you changed manually the database file, you have to remove the corresponding entries in `GAME` and `DISC` tables.
+If you are using `Game.ini` files, just delete the `custom.db` file from the USB media and poweroff, removing the power cable. Connect the power again, and start the console with the USB drive attached. The game database will be recreated from scratch, using only the existing folders. If you changed manually the database file, you have to remove the corresponding entries in `GAME` and `DISC` tables.
 
 ### Is the `custom.db` file always edited on start?
 

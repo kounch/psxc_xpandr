@@ -3,11 +3,11 @@ Un método seguro para expandir y/o reemplazar virtualmente juegos de una PlaySt
 
 Características
 * Modificación mínima del almacenamiento interno de la PlayStation Classic
-* Puede mantener o reemplazar virtualmente los juegos instalados originalmente
-* Puede añadir nuevos juegos (que se cargan desde la unidad USB en vez de la memoria interna)
-* Extrae automáticament los ficheros necesarios cuando se utiliza en una unidad USB vacía
-* Añade soporte para acceder al menú del emulador de la consola usando simultáneamente los botones `Select` and `Triángulo` de un mando
-* Opcionalmente se puede hacer compatible con dos controles, usando un hub USB
+* Puede mantener o reemplazar virtualmente los juegos instalados originalmente (cargándolos desde USB en vez de la memoria interna)
+* Puede añadir nuevos juegos (que se cargan también desde la unidad USB)
+* Extrae automáticamente los ficheros necesarios cuando se utiliza en una unidad USB vacía
+* Añade soporte para acceder al menú del emulador de la consola usando simultáneamente los botones `Select` y `Triángulo` de un mando
+* Opcionalmente compatible con dos mandos usando un hub USB
 * Soporte opcional para modificar la interfaz gráfica
 * Soporte opcional para cheatpops.db
 
@@ -18,7 +18,7 @@ Características
 
 Formatee un disco USB compatible usando el sistema de archivos FAT32, y ponga el nombre SONY.
 
-Descargue la última versión [de aquí](https://github.com/kounch/psc_xpandr/releases/latest). Extraiga el contenido, y copi, al menos, la carpeta `691843bb-62d6-4423-a105-19c06af91a8c` a la raíz de la unidad.
+Descargue la última versión del software [desde aquí](https://github.com/kounch/psc_xpandr/releases/latest). Extraiga el contenido, y copie, al menos, la carpeta `691843bb-62d6-4423-a105-19c06af91a8c` a la raíz de la unidad.
 
 Copie los archivos de los juegos en carpetas numeradas, dentro de otra carpeta llamada `games` en la raíz de la unidad, tal y como se explica [más adelante en este texto](#GameINI).
 
@@ -26,7 +26,7 @@ Copie los archivos de los juegos en carpetas numeradas, dentro de otra carpeta l
 
 ### Primer Uso
 
-La primera vez que se utiliza con una unidad USB vacía, las siguientes carpetas y fichros se copain desde el almacenamiento interno a la unidad USB
+La primera vez que se utiliza con una unidad USB vacía, las siguientes carpetas y ficheros se copian desde el almacenamiento interno a la unidad USB:
 ```
 /
 |
@@ -47,7 +47,7 @@ La primera vez que se utiliza con una unidad USB vacía, las siguientes carpetas
     +-custom.db
 ```
 
-Estos se pueden modificar para cambiar la interfaz de usuario, añadir soporte para un segundo mando de juego si se utiliza un hub USB, etc. Siga leyendo para ver más instrucciones.
+Estos archivos se pueden modificar para cambiar la interfaz de usuario, añadir soporte para un segundo mando de juego si se utiliza un hub USB, etc. Siga leyendo para ver más instrucciones.
 
 ### Personalización
 
@@ -80,11 +80,21 @@ Donde cada línea debe completarse de la siguiente manera:
 | Players   | Número de jugadores (1 ó 2)                                           |
 | Year      | Año de lanzamiento del juego                                          |
 
+Por ejemplo, para un juego llamado "Res Evl 2", con dos discos con ficheros BIN/CUE llamados `SUES-00972.bin`, `SUES-00972.cue`, `SUES-10972.bin`, `SUES-10972.cue`, de un jugador y publicado en 1997 por "Pepi Interactive", sería así:
+```
+[Game]
+Discs=SUES-00972,SUES-10972
+Title=Res Evl 2
+Publisher=Pepi Interactive
+Players=1
+Year=1997
+```
+
 #### Alterar la interfaz de usuario
 
 Edite los archivos en la carpeta `data/GR` . Por ejemplo, para cambiar la imagen del fondo, cambie el fichero `JP_US_BG.png`.
 
-#### Añadir soporte para usar un segundo mando usando un hub USB
+#### Añadir soporte para un segundo mando usando un hub USB
 
 Cambie el archivo `data/system/20-joystick.rules`, reemplazando el contenido por
 
@@ -99,16 +109,16 @@ Modifique el archivo `data/system/sonyapp-copylink`, cambiando el número 25 de 
 
 Copie o cree un fichero `cheatpops.db` dentro de la carpeta `/games` de la unidad USB.
 
-#### Usando una version personalizada del emulador pcsx
+#### Usando una versión personalizada del emulador pcsx
 
-Puede intercambiar por otro el fichero ejecutable del emulador extraido en `data/system/pcsx`, usando, por ejemplo, uno que tenga aplicado el parche mipmap_patch (ver [aquí](https://www.reddit.com/r/PlaystationClassic/comments/a7uhwm/remove_default_bilinear_filter/) para más información).
+Puede sustituir por otro el fichero ejecutable del emulador extraido en `data/system/pcsx`, usando, por ejemplo, uno que tenga aplicado el parche mipmap_patch (ver [aquí](https://www.reddit.com/r/PlaystationClassic/comments/a7uhwm/remove_default_bilinear_filter/) para más información).
 
 #### Cambiar o quitar la imagen de carga
 
 Se puede modificar la imagen de carga cambiando el fichero `splash.jpg` de la carpeta `691843bb-62d6-4423-a105-19c06af91a8c`. También se puede hacer que no aparezca ninguna imagen si se borra el fichero.
 
 #### Añadir un juego nuevo editando manualmente `custom.db`
-Si se prefiere, es posible añadir juegos uno mismo a la base de datos. En este caso, no cree un fichero `Game.ini` file, modifique `games/custom.db` en el programa editor de SQLite que prefiera, y añada nuevas entradas a la tabla `GAME` de la siguiente manera:
+Si se prefiere, es posible añadir juegos uno mismo a la base de datos. En este caso, no cree un fichero `Game.ini` file y modifique `games/custom.db` en el programa editor de SQLite que prefiera, añadiendo nuevas entradas a la tabla `GAME` de la siguiente manera:
 
 | Campo                | Descripción del contenido               |
 |----------------------|-----------------------------------------|
@@ -140,17 +150,17 @@ Dentro de dicha carpeta, ha de poner, al menos, los siguientes archivos:
 #### Reemplazar un juego existente cambiando `custom.db`
 Para reemplazar un juego que ya exista, edite `games/custom.db` tal y como se explica anterioremente, modificando los datos existentes las tablas `GAME` y `DISC`, manteniendo el formato.
 
-Después, dentro de la carpeta `games`, cree una nueva carpetay y añada todos los ficheros necesarios.
+Después, dentro de la carpeta `games`, cree una nueva carpeta y añada todos los ficheros necesarios.
 
 ## Créditos
 
 Basado en:
 * lolhack, un lanzador creado por [madmonkey](https://github.com/madmonkey1907)
-* [gpghax de justMaku](https://github.com/justMaku/gpghax)
+* La versión original de [gpghax de justMaku](https://github.com/justMaku/gpghax)
 * Acceso al menú del emulador usando Select + Triangle del mando, creado por andshrew
-* PCSX ReARMed, PCSX para ARM de [Notaz](https://notaz.gp2x.de) (información sobre cheatpops.db)
+* PCSX ReARMed, versión para ARM del emulador PCSX por [Notaz](https://notaz.gp2x.de) (información sobre cheatpops.db)
 * Explicación del usuario rubixcube6 en Reddit de la [creación de temas personalizados](https://redd.it/a5g5kx)
-* Explicación del usuario NonyaDB explanation para [aumentar el límite de 25 juegos](https://www.reddit.com/r/PlaystationClassic/comments/a44ka6/add_custom_games_on_usb_storage_with_gpghax/ebci4hg/)
+* Explicación del usuario NonyaDB en Reddit para [aumentar el límite de 25 juegos](https://www.reddit.com/r/PlaystationClassic/comments/a44ka6/add_custom_games_on_usb_storage_with_gpghax/ebci4hg/)
 * [Instrucciones para compilar de forma cruzada para ARM](https://neerajcodes.wordpress.com/2017/08/29/toolchain-cross-compilation-using-crosstool-ng/) por Neeraj Kumar
 * [Instrucciones para compilar de forma cruzada SQLite3](https://vicente-hernando.appspot.com/sqlite3-cross-compile-arm-howto) de Vicente Hernando
 
@@ -158,17 +168,17 @@ Basado en:
 
 ### ¿Modifica esto mi consola?
 
-El script intenta mantener al mínimo el número de archivos y directorios modificados el almacenamiento interno de la consoa, montando de forma virtual la mayoría de la información desde la unidad USB. Sin embargo, existe un mínimo de datos se han de crear para que funcione.
+El script intenta mantener al mínimo el número de archivos y directorios modificados en el almacenamiento interno de la consoa, montando de forma virtual la totalidad de la información desde la unidad USB. Sin embargo, existe un mínimo de datos se han de crear para que funcione.
 
-Archivos o directorios que el script crea en el almacenamiento interno:
-* Para cualquier carpeta que haya en `/games`, si no existiera, se crea un directorio vacío con el mismo nombre en el almacenamiento interno en `/gaadata`
-* Para cualquier carpeta que haya en `/games`, si no existiera, se crea un directorio vacío con el mismo nombre en `/data/AppData/sony/pcsx/`
-* Para cualquier carpeta que haya en `/games`, se crea un enlace simbólico con el nombre `.pcsx/pcsx.cfg` dentro del directorio con el mismo nombre en `/data/AppData/sony/pcsx/`, apuntando al fichero `pcsx.cfg` de la unidad USB.
+Estos son los archivos o directorios que el script crea en el almacenamiento interno:
+* Para cualquier carpeta que haya en `/games`, si no existe, se crea un directorio vacío con el mismo nombre en el almacenamiento interno en `/gaadata`
+* Para cualquier carpeta que haya en `/games`, si no existe, se crea un directorio vacío con el mismo nombre en `/data/AppData/sony/pcsx/`
+* Para cualquier carpeta que haya en `/games`, se crea un enlace simbólico con el nombre `.pcsx/pcsx.cfg` dentro del directorio con el mismo nombre en `/data/AppData/sony/pcsx/`, y apuntando al fichero `pcsx.cfg` de la unidad USB.
 * Si se añade un fichero `cheatpops.db`, se crea un fichero vacío con el mismo nombre dentro del directorio `/data/AppData/sony/pcsx`.
 
 ### ¿Puede estropear mi consola?
 
-Se ha puesto mucho esfuerzo para hacerlo lo más seguro posible, sin embargo, no se ofrece ninguna garantía y se renuncia a toda obligación y responsabilidad por cualquier daño que pueda sufrir su consola al utilizarlo. Por favor, no use este software si no está seguro de lo que está haciendo.
+Las probabilidades son casi nulas, ya que no se altera ningún archivo original de la consola. Se ha puesto mucho esfuerzo para que sea lo más seguro posible, sin embargo, no se ofrece ninguna garantía y se renuncia a toda obligación y responsabilidad por cualquier daño que pueda sufrir su consola al utilizarlo. Por favor, no use este software si no está seguro de lo que está haciendo.
 
 ### ¿Cómo funciona?
 
@@ -176,9 +186,9 @@ El archivo `LUPDATA.bin` que está dentro de la carpeta `691843bb-62d6-4423-a105
 A continuación, el script para el menú de la consola, monta virtualmente ficheros y carpetas del disco USB, reconfigura temporalmente el sistema, editando si fuera necesario la copia realizada de la base de datos, utilizando el ejecutable de sqlite3 incorporado, y lanza de nuevo el programa del menú principal.
 De esta manera, si se apaga completamente la PlayStation Classic y se vuelve a encender sin la unidad USB, todo debería funcionar como si no se hubiera realizado ninguna modificación.
 
-### He borrado una carepta de un juego, pero todavía aparece
+### He borrado una carpeta de un juego, pero todavía aparece
 
-Si está utilizando ficheros `Game.ini`, simplemente borre el archivo `custom.db` del disco USB y vuelva a encender la consola. La base de datos de juego se volverá a crear desde cero, usando sólo las carpetas existentes. En otro caso, si modificó manualmente el archivo de base de datos, tendrá que eliminar los datos correspondientes de las tablas `GAME` y `DISC`.
+Si está utilizando ficheros `Game.ini`, simplemente borre el archivo `custom.db` del disco USB y apague completamente, desconectando el cable de alimentación. Conecte de nuevo el cable de alimentación y vuelva a encender la consola con la unidad USB conectada. La base de datos de juegos se volverá a crear desde cero, usando sólo las carpetas existentes. En otro caso, si modificó manualmente el archivo de base de datos, tendrá que eliminar los datos correspondientes de las tablas `GAME` y `DISC`.
 
 ### ¿Se modifica el fichero `custom.db` todas las veces que se utiliza psxc_xpandr?
 
@@ -187,7 +197,7 @@ Sí, siempre que el script encuentra un archivo `Game.ini`, se edita el fichero 
 ## Copyright
 
 Copyright (c) 2019, kounch
-All rights reserved.
+Todos los derechos reservados.
 
 La redistribución y uso en forma de código fuente o binario, con o sin
 modificaciones, están permitidas siempre y cuando se cumplan las siguientes
