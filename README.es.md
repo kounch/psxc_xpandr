@@ -1,5 +1,5 @@
 # psxc_xpandr
-Un método seguro para expandir y/o reemplazar virtualmente juegos de una PlayStation Classic usando un disco externo USB, sin riesgo. Una vez que se retira el disco USB y se hace un apagado y encendio completo, la consola funciona como si no se hubiera hecho nada.
+Un método seguro para expandir y/o reemplazar virtualmente juegos de una PlayStation Classic usando un disco externo USB, sin riesgo. Una vez que se retira el disco USB y se hace un apagado y encendido completo, la consola funciona como si no se hubiera hecho nada.
 
 Características
 * Modificación mínima del almacenamiento interno de la PlayStation Classic
