@@ -1,5 +1,5 @@
 # psxc_xpandr
-A safe hack to expand and/or replace virtually games of a PlayStation Classic using a external USB drive, with no risk. Once you remove the USB drive and make a cold restart, the console works as if nothing was done.
+A safe hack to expand and/or replace virtually games in a PlayStation Classic using an external USB drive, with no risk. Once you remove the USB drive and make a cold restart, the console works as if nothing was done.
 
 Features:
 * Minimal modification of PlayStation Classic internal storage
@@ -164,10 +164,11 @@ Based on:
 * The original [gpghax by justMaku](https://github.com/justMaku/gpghax)
 * Access Esc Menu from Select + Triangle on controller by andshrew
 * PCSX ReARMed, PCSX port for ARM by [Notaz](https://notaz.gp2x.de) (info about cheatpops.db)
-* Reddit's rubixcube6 explanation on [how to make custom themes](https://redd.it/a5g5kx)
-* Reddit's NonyaDB explanation to [overcome 25 games limit](https://www.reddit.com/r/PlaystationClassic/comments/a44ka6/add_custom_games_on_usb_storage_with_gpghax/ebci4hg/)
+* [u/rubixcube6's](https://www.reddit.com/user/rubixcube6) post about [how to make custom themes](https://redd.it/a5g5kx)
+* [u/NonyaDB's](https://www.reddit.com/user/nonyadb) explanation to [overcome 25 games limit](https://www.reddit.com/r/PlaystationClassic/comments/a44ka6/add_custom_games_on_usb_storage_with_gpghax/ebci4hg/)
 * Neeraj Kumar's [instructions for cross-compiling to ARM](https://neerajcodes.wordpress.com/2017/08/29/toolchain-cross-compilation-using-crosstool-ng/)
 * Vicente Hernando's [instructions to cross-compile SQLite3](https://vicente-hernando.appspot.com/sqlite3-cross-compile-arm-howto)
+* PSC_RetroBoot, by [u/genderbent](https://www.reddit.com/user/genderbent)
 
 ## FAQ
 
@@ -183,17 +184,17 @@ Files/directories that the script creates in the internal media:
 
 ### Can it brick my console?
 
-The probability is almost none, as none of the original files in the console are modified. A lot of work has been made to try to make it as failsafe as possible, however, no warranties are made or responsabilities taken for any damage that you could make to your console by using it. Please, don't do if you if you are not sure of what you are doing.
+The probability is almost none, as none of the original files in the console are modified. A lot of work has been made to try to make it as failsafe as possible, however, no warranties are made or responsibilities taken for any damage that you could make to your console by using it. Please, don't do if you if you are not sure of what you are doing.
 
 ### How does it work?
 
-The file `LUPDATA.bin` inside the folder `691843bb-62d6-4423-a105-19c06af91a8` is a Shell script (source available [here](https://github.com/kounch/psxc_xpandr)), encrypted and signed so that the internal update system of an original PlayStation Classic recognizes it, copies it to a temporary directory an executes its contents.
-Then, the script stops the main console menu, mounts virtually files and folders from the USB stick, reconfigures temporarily the system, editing if necessary the database copy using the included sqlite3 binary, and launchs again the main menu software.
+The file `LUPDATA.bin` inside the folder `691843bb-62d6-4423-a105-19c06af91a8` is a Shell script (source available [here](https://github.com/kounch/psxc_xpandr)), encrypted and signed so that the internal update system of an original PlayStation Classic recognises it, copies it to a temporary directory an executes its contents.
+Then, the script stops the main console menu, mounts virtually files and folders from the USB stick, reconfigures temporarily the system, editing if necessary the database copy using the included sqlite3 binary, and launches again the main menu software.
 This way, if the PlayStation Classic is powered off, and then started again without the USB drive, everything should work as if no modifications were made.
 
 ### I have deleted a game folder, but the game is still shown
 
-If you are using `Game.ini` files, just delete the `custom.db` file from the USB media and poweroff, removing the power cable. Connect the power again, and start the console with the USB drive attached. The game database will be recreated from scratch, using only the existing folders. If you changed manually the database file, you have to remove the corresponding entries in `GAME` and `DISC` tables.
+If you are using `Game.ini` files, just delete the `custom.db` file from the USB media and power off, removing the power cable. Connect the power again, and start the console with the USB drive attached. The game database will be recreated from scratch, using only the existing folders. If you changed manually the database file, you have to remove the corresponding entries in `GAME` and `DISC` tables.
 
 ### Is the `custom.db` file always edited on start?
 

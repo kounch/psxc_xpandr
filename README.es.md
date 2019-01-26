@@ -59,7 +59,7 @@ Dentro de dicha carpeta, ha de poner al menos los siguientes archivos:
 * `BASENAME.bin`: Fichero BIN del disco (ha de tener el mismo nombre `BASENAME` que el fichero CUE)
 * `BASENAME.png`: Imagen PNG image de menos de 512x521 pixels de tamaño (ha de seguir usando el mismo `BASENAME`)
 * `pcsx.cfg`: Fichero de configuración del juego PCSX (un fichero de ejemplo está disponible para descarga [aquí](https://raw.githubusercontent.com/kounch/psxc_xpandr/master/pcsx.cfg))
-* `Game.ini`: Fichero de descripcion del juego con el siguiente formato:
+* `Game.ini`: Fichero de descripción del juego con el siguiente formato:
 
 ```
 [Game]
@@ -111,7 +111,7 @@ Copie o cree un fichero `cheatpops.db` dentro de la carpeta `/games` de la unida
 
 #### Usando una versión personalizada del emulador pcsx
 
-Puede sustituir por otro el fichero ejecutable del emulador extraido en `data/system/pcsx`, usando, por ejemplo, uno que tenga aplicado el parche mipmap_patch (ver [aquí](https://www.reddit.com/r/PlaystationClassic/comments/a7uhwm/remove_default_bilinear_filter/) para más información).
+Puede sustituir por otro el fichero ejecutable del emulador extraído en `data/system/pcsx`, usando, por ejemplo, uno que tenga aplicado el parche mipmap_patch (ver [aquí](https://www.reddit.com/r/PlaystationClassic/comments/a7uhwm/remove_default_bilinear_filter/) para más información).
 
 #### Cambiar o quitar la imagen de carga
 
@@ -152,7 +152,7 @@ Dentro de dicha carpeta, ha de poner, al menos, los siguientes archivos:
 * `pcsx.cfg`: Fichero de configuración del juego PCSX (un fichero de ejemplo está disponible para descarga [aquí](https://raw.githubusercontent.com/kounch/psxc_xpandr/master/pcsx.cfg))
 
 #### Reemplazar un juego existente cambiando `custom.db`
-Para reemplazar un juego que ya exista, edite `games/custom.db` tal y como se explica anterioremente, modificando los datos existentes las tablas `GAME` y `DISC`, manteniendo el formato.
+Para reemplazar un juego que ya exista, edite `games/custom.db` tal y como se explica anteriormente, modificando los datos existentes las tablas `GAME` y `DISC`, manteniendo el formato.
 
 Después, dentro de la carpeta `games`, cree una nueva carpeta y añada todos los ficheros necesarios.
 
@@ -163,16 +163,17 @@ Basado en:
 * La versión original de [gpghax de justMaku](https://github.com/justMaku/gpghax)
 * Acceso al menú del emulador usando Select + Triangle del mando, creado por andshrew
 * PCSX ReARMed, versión para ARM del emulador PCSX por [Notaz](https://notaz.gp2x.de) (información sobre cheatpops.db)
-* Explicación del usuario rubixcube6 en Reddit de la [creación de temas personalizados](https://redd.it/a5g5kx)
-* Explicación del usuario NonyaDB en Reddit para [aumentar el límite de 25 juegos](https://www.reddit.com/r/PlaystationClassic/comments/a44ka6/add_custom_games_on_usb_storage_with_gpghax/ebci4hg/)
+* Explicación de [u/rubixcube6](https://www.reddit.com/user/rubixcube6) para [la creación de temas personalizados](https://redd.it/a5g5kx)
+* Explicación de [u/NonyaDB](https://www.reddit.com/user/nonyadb) para [aumentar el límite de 25 juegos](https://www.reddit.com/r/PlaystationClassic/comments/a44ka6/add_custom_games_on_usb_storage_with_gpghax/ebci4hg/)
 * [Instrucciones para compilar de forma cruzada para ARM](https://neerajcodes.wordpress.com/2017/08/29/toolchain-cross-compilation-using-crosstool-ng/) por Neeraj Kumar
 * [Instrucciones para compilar de forma cruzada SQLite3](https://vicente-hernando.appspot.com/sqlite3-cross-compile-arm-howto) de Vicente Hernando
+* PSC_RetroBoot, por [u/genderbent](https://www.reddit.com/user/genderbent)
 
 ## Preguntas frecuentes
 
 ### ¿Modifica esto mi consola?
 
-El script intenta mantener al mínimo el número de archivos y directorios modificados en el almacenamiento interno de la consoa, montando de forma virtual la totalidad de la información desde la unidad USB. Sin embargo, existe un mínimo de datos se han de crear para que funcione.
+El script intenta mantener al mínimo el número de archivos y directorios modificados en el almacenamiento interno de la consola, montando de forma virtual la totalidad de la información desde la unidad USB. Sin embargo, existe un mínimo de datos se han de crear para que funcione.
 
 Estos son los archivos o directorios que el script crea en el almacenamiento interno:
 * Para cualquier carpeta que haya en `/games`, si no existe, se crea un directorio vacío con el mismo nombre en el almacenamiento interno en `/gaadata`
@@ -187,7 +188,7 @@ Las probabilidades son casi nulas, ya que no se altera ningún archivo original 
 ### ¿Cómo funciona?
 
 El archivo `LUPDATA.bin` que está dentro de la carpeta `691843bb-62d6-4423-a105-19c06af91a8` es un script de Shell (código fuente disponible [aquí](https://github.com/kounch/psxc_xpandr)), cifrado y firmado de tal manera que el sistema interno de actualizaciones de una PlayStation Classic original lo reconoce, lo copia a un directorio temporal y lo ejecuta.
-A continuación, el script para el menú de la consola, monta virtualmente ficheros y carpetas del disco USB, reconfigura temporalmente el sistema, editando si fuera necesario la copia realizada de la base de datos, utilizando el ejecutable de sqlite3 incorporado, y lanza de nuevo el programa del menú principal.
+A continuación, el script para el menú de la consola, monta virtualmente ficheros y carpetas del disco USB, vuelve a configurar temporalmente el sistema, editando si fuera necesario la copia realizada de la base de datos, utilizando el ejecutable de sqlite3 incorporado, y lanza de nuevo el programa del menú principal.
 De esta manera, si se apaga completamente la PlayStation Classic y se vuelve a encender sin la unidad USB, todo debería funcionar como si no se hubiera realizado ninguna modificación.
 
 ### He borrado una carpeta de un juego, pero todavía aparece
@@ -211,7 +212,7 @@ condiciones:
 esta lista de condiciones y el siguiente texto.
 
 * La redistribución en formato binario debe reproducir el aviso de copyright, 
-esta lista de codiciones y el siguiente texto en la documentación y/o en otros
+esta lista de condiciones y el siguiente texto en la documentación y/o en otros
 materiales que acompañen a la distribución.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
