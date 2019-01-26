@@ -26,7 +26,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-PSXC_VER="2.5"
+PSXC_VER="2.5.1"
 
 #Main script
 main() {
@@ -38,8 +38,8 @@ main() {
     #Needed for Esc Menu
     export PCSX_ESC_KEY=2
 
-    #Kill main menu, just in case anything was locked or in use
-    killall ui_menu
+    #Close Sony Menu, just in case anything was locked or in use
+    closeui
 
     #Show splash screen
     if [ -e "${XPANDR_PATH}/splash.jpg" ]; then
@@ -209,6 +209,24 @@ get_lang() {
     fi
 }
 
+#Close Sony Menu gracefully
+closeui()
+{
+	# Wait for system to finish initializing
+	while [ -z "$(ps | grep -E 'ui_menu' | grep -v grep)" ]; do
+		usleep 250000
+	done
+	sleep 1
+
+	# Exit Sony software gracefully
+	touch "/data/power/prepare_suspend"
+	while [ ! -z "$(ps | grep -E 'sonyapp|ui_menu|auto_dimmer|pcsx' | grep -v grep)" ]; do
+		usleep 250000
+	done
+	rm "/data/power/prepare_suspend"
+	rm "/data/power/apps_okay"
+}
+
 #Logging function with translation
 log_line() {
     LOG_TXT=$1
@@ -231,9 +249,6 @@ log_line() {
 #Notify start
 echo 0 > /sys/class/leds/green/brightness
 echo 1 > /sys/class/leds/red/brightness
-
-#Wait for system and menu finish starting up, needed to have working sound
-sleep 8s
 
 log_line "psxc_xpandr v${PSXC_VER}"
 main
