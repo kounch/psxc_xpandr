@@ -1,5 +1,5 @@
 # psxc_xpandr
-A safe hack to expand and/or replace virtually games of a PlayStation Classic using a external USB drive, with no risk. Once you remove the USB drive an make a cold restart, the console works as if nothing was done.
+A safe hack to expand and/or replace virtually games of a PlayStation Classic using a external USB drive, with no risk. Once you remove the USB drive and make a cold restart, the console works as if nothing was done.
 
 Features:
 * Minimal modification of PlayStation Classic internal storage
