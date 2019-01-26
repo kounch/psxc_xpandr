@@ -206,9 +206,12 @@ get_lang() {
     if [ "${L_CODE}" != "" ]; then
       LANG=${L_CODE}
     fi
-    
+
+    if [ "${L_CODE}" = "4" ]; then
+        log_line "Detectado Idioma Latino" 11
+    fi
     if [ "${L_CODE}" = "5" ]; then
-        log_line "Detectado Idioma Castellano" 15
+        log_line "Detectado Idioma Castellano" 11
     fi
 }
 
@@ -218,6 +221,7 @@ log_line() {
     LOG_CODE=$2
     LANG_FILE=/media/691843bb-62d6-4423-a105-19c06af91a8c/${LANG}.strings
 
+    LANG_LINE=
     if [ -f "${LANG_FILE}" ] && [ "${LOG_CODE}" != "" ]; then
         LANG_LINE=`head -${LOG_CODE} "${LANG_FILE}" | tail -1`
     fi
