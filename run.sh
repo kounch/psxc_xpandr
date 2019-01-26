@@ -26,6 +26,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+PSXC_VER="2.5"
 
 #Main script
 main() {
@@ -217,7 +218,7 @@ log_line() {
     LOG_CODE=$2
     LANG_FILE=/media/691843bb-62d6-4423-a105-19c06af91a8c/${LANG}.strings
 
-    if [ -f "${LANG_FILE}" ]; then
+    if [ -f "${LANG_FILE}" ] && [ "${LOG_CODE}" != "" ]; then
         LANG_LINE=`head -${LOG_CODE} "${LANG_FILE}" | tail -1`
     fi
 
@@ -236,6 +237,7 @@ echo 1 > /sys/class/leds/red/brightness
 #Wait for system and menu finish starting up, needed to have working sound
 sleep 8s
 
+log_line "psxc_xpandr v${PSXC_VER}"
 main
 
 #Notify end
