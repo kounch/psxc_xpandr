@@ -33,7 +33,7 @@ main() {
     XPANDR_PATH=/media/691843bb-62d6-4423-a105-19c06af91a8c/
     ORIG_DIR=/media/games
     ORIG_DB=${ORIG_DIR}/custom.db
-    LANG=5 #Spanish as default
+    LANG=2
 
     #Needed for Esc Menu
     export PCSX_ESC_KEY=2
@@ -205,13 +205,7 @@ get_lang() {
     L_CODE=`grep iUiUserSettingSelectedLanguageId /media/data/system/custom.pre | awk -F'=' '{print $2}'`
     if [ "${L_CODE}" != "" ]; then
       LANG=${L_CODE}
-    fi
-
-    if [ "${L_CODE}" = "4" ]; then
-        log_line "Detectado Idioma Latino" 11
-    fi
-    if [ "${L_CODE}" = "5" ]; then
-        log_line "Detectado Idioma Castellano" 11
+      log_line "Detected Language" 11
     fi
 }
 
