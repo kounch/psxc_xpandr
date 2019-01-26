@@ -117,6 +117,10 @@ Puede sustituir por otro el fichero ejecutable del emulador extraido en `data/sy
 
 Se puede modificar la imagen de carga cambiando el fichero `splash.jpg` de la carpeta `691843bb-62d6-4423-a105-19c06af91a8c`. También se puede hacer que no aparezca ninguna imagen si se borra el fichero.
 
+#### Traducir el texto que se muestra durante el arranque
+
+Puede añadir sus propias traducciones. El script obtiene el valor de `iUiUserSettingSelectedLanguageId` en el archivo `/media/data/system/custom.pre`, y luego intenta usar el contenido del archivo `.strings` correspondiente de la carpeta `691843bb-62d6-4423-a105-19c06af91a8c`. Simplemente copie uno de los archivos existentes, cambie el nombre al número de su idioma, y traduzca el texto de dentro del fichero.
+
 #### Añadir un juego nuevo editando manualmente `custom.db`
 Si se prefiere, es posible añadir juegos uno mismo a la base de datos. En este caso, no cree un fichero `Game.ini` file y modifique `games/custom.db` en el programa editor de SQLite que prefiera, añadiendo nuevas entradas a la tabla `GAME` de la siguiente manera:
 

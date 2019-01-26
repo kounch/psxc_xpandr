@@ -117,6 +117,10 @@ You can change the extracted  `data/system/pcsx` emulator executable for another
 
 It is possible to change the splash screen by replacing the `splash.jpg` file in the folder `691843bb-62d6-4423-a105-19c06af91a8c`. You can also remove the splash screen if you delete the file from the drive.
 
+#### Localizing the text shown on splash screen
+
+You can add your own localized text. The scripts checks for the value of `iUiUserSettingSelectedLanguageId` in the file `/media/data/system/custom.pre`, and then uses the contents of the corresponding `.strings` file in the folder `691843bb-62d6-4423-a105-19c06af91a8c`. Just copy one of the existing files, rename it to the number of your language and translate the text.
+
 #### Add a new game by editing manually `custom.db`
 If you prefer so, it is possible to add by yourself the games to the database. In this case, do not create a `Game.ini` file, open `games/custom.db` in an SQLite Editor of your choice, and insert new entries to the `GAME` table as follows:
 
