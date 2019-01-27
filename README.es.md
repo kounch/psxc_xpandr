@@ -121,6 +121,15 @@ Se puede modificar la imagen de carga cambiando el fichero `splash.jpg` de la ca
 
 Puede añadir sus propias traducciones. El script obtiene el valor de `iUiUserSettingSelectedLanguageId` en el archivo `/media/data/system/custom.pre`, y luego intenta usar el contenido del archivo `.strings` correspondiente de la carpeta `691843bb-62d6-4423-a105-19c06af91a8c`. Simplemente copie uno de los archivos existentes, cambie el nombre al número de su idioma, y traduzca el texto de dentro del fichero.
 
+#### Forzar un juego game para correr como NTSC
+
+Para forzar un juego PAL para que se ejecute como NTSC, cambie el valor a `region = 1` en `games/GAME_ID/pcsx.cfg`.
+
+#### Ejecutar un juego con doble resolución
+
+Para hacer que un juego se lance por defecto con doble resolución, configure el valor `gpu_neon.enhancement_enable = 1` en `games/GAME_ID/pcsx.cfg`.
+
+
 #### Añadir un juego nuevo editando manualmente `custom.db`
 Si se prefiere, es posible añadir juegos uno mismo a la base de datos. En este caso, no cree un fichero `Game.ini` file y modifique `games/custom.db` en el programa editor de SQLite que prefiera, añadiendo nuevas entradas a la tabla `GAME` de la siguiente manera:
 

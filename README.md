@@ -121,6 +121,14 @@ It is possible to change the splash screen by replacing the `splash.jpg` file in
 
 You can add your own localized text. The scripts checks for the value of `iUiUserSettingSelectedLanguageId` in the file `/media/data/system/custom.pre`, and then uses the contents of the corresponding `.strings` file in the folder `691843bb-62d6-4423-a105-19c06af91a8c`. Just copy one of the existing files, rename it to the number of your language and translate the text.
 
+#### Force a PAL game to run in NTSC
+
+To force a PAL game to run in NTSC, set the value `region = 1` in `games/GAME_ID/pcsx.cfg`.
+
+#### Run a game in double resolution
+
+To make a game to run in double resolution, set the value `gpu_neon.enhancement_enable = 1` in `games/GAME_ID/pcsx.cfg`.
+
 #### Add a new game by editing manually `custom.db`
 If you prefer so, it is possible to add by yourself the games to the database. In this case, do not create a `Game.ini` file, open `games/custom.db` in an SQLite Editor of your choice, and insert new entries to the `GAME` table as follows:
 
